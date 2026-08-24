@@ -9,6 +9,7 @@ printf ("\n");
 printf ("Universidad de San Carlos de Guatemala \n");
 printf ("\n");
 printf ("Carnet 3019990660101 \n");
+printf ("Maria Fernanda Orellana");
 printf ("\n");
 return 0;
 }

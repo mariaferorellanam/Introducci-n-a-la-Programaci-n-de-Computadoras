@@ -1,0 +1,12 @@
+Nombre: Mafer
+Numero Ingresado: 78
+Factorial: 0
+
+Nombre: Mafer
+Numero Ingresado: 78
+Factorial: 0
+
+Nombre: Adrian
+Numero Ingresado: 6
+Factorial: 720
+
