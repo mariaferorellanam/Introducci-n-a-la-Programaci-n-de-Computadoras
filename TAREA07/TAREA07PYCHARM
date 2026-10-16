@@ -1,0 +1,112 @@
+import tkinter as tk
+from tkinter import messagebox
+import os
+
+ARCHIVO_HISTORIAL = "historial_imc.txt"
+
+
+def calcular_imc():
+    try:
+        # Valores Obtenidos
+        peso_str = entrada_peso.get().replace(",", ".")
+        altura_str = entrada_altura.get().replace(",", ".")
+
+        if not peso_str or not altura_str:
+            messagebox.showwarning("Advertencia", "Por favor, ingresa el peso y la altura.")
+            return
+
+        peso = float(peso_str)
+        altura = float(altura_str)
+
+        if peso <= 0 or altura <= 0:
+            messagebox.showerror("Error", "Por obviedad, los valores ingresados deben de ser mayores a 0.")
+            return
+
+        # Cálculo del IMC
+        imc = peso / (altura ** 2)
+
+        # Clasificación
+        if imc < 18.5:
+            clasificacion = "Su Peso Indica: Bajo de Peso"
+        elif 18.5 <= imc < 25.0:
+            clasificacion = "Su Peso Indica: Peso Saludable"
+        elif 25.0 <= imc < 30.0:
+            clasificacion = "Su Peso Indica: Sobrepeso"
+        else:
+            clasificacion = "Su Peso Indica: Obesidad"
+
+        resultado_texto = f"IMC: {imc:.2f} - {clasificacion}"
+        etiqueta_resultado.config(text=resultado_texto, fg="magenta")
+
+        # Guardar en Archivo de Texto
+        with open(ARCHIVO_HISTORIAL, "a", encoding="utf-8") as archivo:
+            archivo.write(f"Peso: {peso} kg | Altura: {altura} m | {resultado_texto}\n")
+
+    except ValueError:
+        messagebox.showerror("Error de Formato", "Por favor, ingrese valores válidos para su peso y altura.")
+
+
+def ver_historial():
+    if not os.path.exists(ARCHIVO_HISTORIAL):
+        messagebox.showinfo("Historial", "No hay existencia de registros realizados.")
+        return
+
+    # Mostrar Historial
+    ventana_historial = tk.Toplevel(ventana)
+    ventana_historial.title("Historial de IMC")
+    ventana_historial.geometry("500x400")
+
+    text_area = tk.Text(ventana_historial, wrap=tk.WORD, width=45, height=15)
+    text_area.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
+
+    with open(ARCHIVO_HISTORIAL, "r", encoding="utf-8") as archivo:
+        contenido = archivo.read()
+        text_area.insert(tk.END, contenido)
+
+    text_area.config(state=tk.DISABLED)  # Para que no se pueda editar el texto directamente
+
+
+def borrar_historial():
+    if os.path.exists(ARCHIVO_HISTORIAL):
+        respuesta = messagebox.askyesno("Confirmar", "¿Desea eliminar el historial en su totalidad?")
+        if respuesta:
+            os.remove(ARCHIVO_HISTORIAL)
+            messagebox.showinfo("Éxito", "El historial ha sido borrado.")
+    else:
+        messagebox.showinfo("Historial", "No hay existencia de historial para ser eliminado.")
+
+
+# Ventana Principal
+ventana = tk.Tk()
+ventana.title("Calculadora de IMC")
+ventana.geometry("450x450")
+ventana.resizable(False, False)
+
+# Interfaz
+etiqueta_peso = tk.Label(ventana, text="Ingrese Su Peso (kg):", font=("Times New Roman", 11))
+etiqueta_peso.pack(pady=5)
+
+entrada_peso = tk.Entry(ventana, font=("Times New Roman", 11), justify="center")
+entrada_peso.pack(pady=5)
+
+etiqueta_altura = tk.Label(ventana, text="Ingrese Su Altura (m, ej: 1.65):", font=("Times New Roman", 11))
+etiqueta_altura.pack(pady=5)
+
+entrada_altura = tk.Entry(ventana, font=("Times New Roman", 11), justify="center")
+entrada_altura.pack(pady=5)
+
+boton_calcular = tk.Button(ventana, text="Cálculo de IMC", font=("Times New Roman", 11, "bold"), bg="#FF00FF", fg="white",
+                           command=calcular_imc)
+boton_calcular.pack(pady=10, ipadx=10)
+
+etiqueta_resultado = tk.Label(ventana, text="IMC: ", font=("Times New Roman", 12, "bold"))
+etiqueta_resultado.pack(pady=10)
+
+boton_historial = tk.Button(ventana, text="Historial", font=("Times New Roman", 10), command=ver_historial)
+boton_historial.pack(pady=2)
+
+boton_borrar = tk.Button(ventana, text="Eliminar Historial", font=("Times New Roman", 10), fg="#FF00FF", command=borrar_historial)
+boton_borrar.pack(pady=2)
+
+
+ventana.mainloop()
